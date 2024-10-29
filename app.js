@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/bookspace', (req,res) =>{
-  res.render('user')
+  res.render('user');
 })
 
 app.use('/cars', adminRoutes)

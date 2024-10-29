@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../public/css/manageSlot.css">
+    <link rel="stylesheet" href="../css/manageSlot.css">
     <style>
         nav {
             width: 100%;
@@ -122,49 +122,55 @@
                 document.getElementById('bookingModal').style.display = 'flex';
             });
         });
-
+    
         // Close modal function
         function closeModal() {
             document.getElementById('bookingModal').style.display = 'none';
         }
-
+    
+        // API call to confirm booking
+        async function confirmBooking(email, paymentReference, slotId, amountPaid) {
+            try {
+                const res = await fetch('/cars/book', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        paymentReference: paymentReference,
+                        slotId: slotId,
+                        amountPaid: amountPaid
+                    })
+                });
+    
+                const data = await res.json();
+                if (data.success) {
+                    alert('Booking confirmed!');
+                } else {
+                    alert('Error confirming booking: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to confirm booking. Please try again.');
+            }
+        }
+    
         // Initialize Paystack payment
         function initiatePayment() {
             const email = document.getElementById('email').value;
             const price = document.getElementById('price').value * 100; // Convert to kobo for Paystack
-
+            const slotId = document.getElementById('slotId').value; // Retrieve slot ID
+    
             let handler = PaystackPop.setup({
                 key: 'pk_test_4cafecdbece6876b2bce9eb81e01a78427850e5f', // Replace with your Paystack public key
                 email: email,
                 amount: price,
                 currency: 'NGN',
-                callback: async function(response) {
+                callback: function(response) {
                     alert('Payment successful! Transaction reference: ' + response.reference);
                     closeModal();
-
-                    // Send payment details to the backend
-                    try {
-                        const res = await fetch('/cars/book', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                email: email,
-                                paymentReference: response.reference,
-                                slotId: slotId,
-                                amountPaid: price / 100 // Convert back to Naira
-                            })
-                        });
-
-                        const data = await res.json();
-                        if (data.success) {
-                            alert('Booking confirmed!');
-                        } else {
-                            alert('Error confirming booking: ' + data.message);
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        alert('Failed to confirm booking. Please try again.');
-                    }
+    
+                    // Call confirmBooking to send payment details to the backend
+                    confirmBooking(email, response.reference, slotId, price / 100); // Convert back to Naira
                 },
                 onClose: function() {
                     alert('Transaction was not completed.');
@@ -173,5 +179,6 @@
             handler.openIframe();
         }
     </script>
+    
 </body>
 </html>
