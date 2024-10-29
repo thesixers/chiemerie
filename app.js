@@ -26,8 +26,12 @@ app.use(cookieParser());
 
 // Landing Page Route
 app.get('/', (req, res) => {
-  res.redirect('/cars');
+  res.redirect('/bookspace');
 });
+
+app.get('/bookspace', (req,res) =>{
+  res.render('user')
+})
 
 app.use('/cars', adminRoutes)
 
