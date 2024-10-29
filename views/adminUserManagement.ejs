@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - User Management</title>
+    <style>
+                      /* Add this to dashboard.css */
+                    /* General dashboard container */
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                      }
+                      
+                      body {
+                        font-family: Arial, sans-serif;
+                        display: flex;
+                        background-color: #f4f7fa;
+                      }
+                
+                      .dashboard-container {
+                              display: flex;
+                              width: 100%;
+                              height: 100vh;
+                            }
+
+                    .sidebar {
+                        width: 250px;
+                        background-color: #222222;
+                        color: #fff;
+                        padding: 20px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                      }
+                      
+                      .sidebar-header h2 {
+                        font-size: 1.5em;
+                        color: #fff;
+                        margin-bottom: 20px;
+                      }
+                      
+                      .sidebar-menu {
+                        display: flex;
+                        flex-direction: column;
+                        width: 100%;
+                      }
+                      
+                      .sidebar-menu a {
+                        color: #ddd;
+                        padding: 15px;
+                        text-decoration: none;
+                        text-align: left;
+                        font-size: 1em;
+                        border-radius: 4px;
+                        margin: 5px 0;
+                        transition: background 0.3s;
+                      }
+                      
+                      .sidebar-menu a:hover,
+                      .sidebar-menu a.active {
+                        background-color: #555;
+                        color: #fff;
+                      }
+
+                    header {
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-bottom: 20px;
+                    }
+
+                    h2 {
+                      color: #333;
+                    }
+
+                    /* Button styling */
+                    .open-form-btn {
+                      padding: 10px 20px;
+                      font-size: 1em;
+                      color: #fff;
+                      background-color: #007bff;
+                      border: none;
+                      border-radius: 4px;
+                      cursor: pointer;
+                    }
+
+                    .open-form-btn:hover {
+                      background-color: #0056b3;
+                    }
+
+                    /* User table styling */
+                    .user-table {
+                      width: 100%;
+                      border-collapse: collapse;
+                      margin-bottom: 20px;
+                    }
+
+                    .user-table th, .user-table td {
+                      border: 1px solid #ddd;
+                      padding: 10px;
+                      text-align: left;
+                    }
+
+                    .user-table th {
+                      background-color: #f4f4f4;
+                    }
+
+                    .edit-btn, .delete-btn {
+                      padding: 5px 10px;
+                      margin: 0 2px;
+                      border: none;
+                      border-radius: 4px;
+                      cursor: pointer;
+                    }
+
+                    .edit-btn {
+                      background-color: #ffc107;
+                      color: #fff;
+                    }
+
+                    .delete-btn {
+                      background-color: #dc3545;
+                      color: #fff;
+                    }
+
+                    /* Modal styling */
+                    .user-form-modal {
+                      display: none; /* Hidden by default */
+                      position: fixed;
+                      top: 0;
+                      left: 0;
+                      width: 100%;
+                      height: 100%;
+                      background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+                      justify-content: center;
+                      align-items: center;
+                    }
+
+                    .user-form-modal .modal-content {
+                      background-color: #f8f9fa;
+                      padding: 20px;
+                      border-radius: 8px;
+                      width: 90%;
+                      max-width: 500px;
+                      position: relative;
+                    }
+
+                    .user-form-modal .close {
+                      position: absolute;
+                      top: 15px;
+                      right: 15px;
+                      font-size: 24px;
+                      color: #333;
+                      cursor: pointer;
+                    }
+
+                    /* Form styling */
+                    .user-form label {
+                      display: block;
+                      margin-top: 10px;
+                      font-weight: bold;
+                    }
+
+                    .user-form input, .user-form select {
+                      width: 100%;
+                      padding: 8px;
+                      margin-top: 5px;
+                      margin-bottom: 15px;
+                      border: 1px solid #ddd;
+                      border-radius: 4px;
+                    }
+
+                    .submit-btn {
+                      width: 100%;
+                      padding: 10px;
+                      background-color: #28a745;
+                      color: #fff;
+                      border: none;
+                      border-radius: 4px;
+                      cursor: pointer;
+                    }
+                    .main-content {
+                          flex: 1;
+                          padding: 20px;
+                        }
+                    .submit-btn:hover {
+                      background-color: #218838;
+                    }
+
+    </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>Admin Panel</h2>
+      </div>
+      <nav class="sidebar-menu">
+        <a href="/users/adminDashboard" >Dashboard</a>
+        <a href="/users/manageSlot">Manage Slots</a>
+        <a href="/users/userManagement" class="active" >Users</a>
+        <a href="#">Payments</a>
+        <a href="#">Reports</a>
+        <a href="#">Settings</a>
+        <a href="#">Logout</a>
+      </nav>
+    </aside>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      
+      <header>
+        <h2>User Management</h2>
+        <!-- Button to open the registration form modal -->
+        <button id="openFormBtn" class="open-form-btn">Register New User</button>
+      </header>
+  
+      <!-- User List Table -->
+      <table class="user-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>John Doe</td>
+            <td>john.doe@example.com</td>
+            <td>Admin</td>
+            <td>Active</td>
+            <td><button class="edit-btn">Edit</button> <button class="delete-btn">Delete</button></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Jane Smith</td>
+            <td>jane.smith@example.com</td>
+            <td>User</td>
+            <td>Inactive</td>
+            <td><button class="edit-btn">Edit</button> <button class="delete-btn">Delete</button></td>
+          </tr>
+          <!-- Additional user rows as needed -->
+        </tbody>
+      </table>
+  
+      <!-- User Registration Form Modal -->
+      <div id="userFormModal" class="user-form-modal">
+        <div class="modal-content">
+          <span id="closeModal" class="close">&times;</span>
+          <h3>Register New User</h3>
+          <form action="#" method="POST" class="user-form">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" required>
+  
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+  
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+  
+            <label for="role">Role</label>
+            <select id="role" name="role" required>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+  
+            <label for="status">Status</label>
+            <select id="status" name="status" required>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+  
+            <button type="submit" class="submit-btn">Register User</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    </main>
+  </div>
+  <script src="../js/adminUserManagement.js"></script>
+</body>
+</html>

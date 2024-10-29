@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Space Booking</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../public/css/manageSlot.css">
+    <style>
+        nav {
+            width: 100%;
+            height: 60px;
+            background-color: #28a745;
+            position: fixed;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        .slot-table {
+            position: relative;
+            top: 100px;
+            left: 100px;
+            width: 100%;
+        }
+        .main {
+            width: 80%;
+        }
+        /* Modal styling */
+        #bookingModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .modal-header h5 {
+            margin: 0;
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">Parking Space</div>
+        <div class="right">
+            <a href="" class="text-white text-decoration-none">Home</a>
+            <a href="" class="text-white text-decoration-none ms-3">Available Spaces</a>
+        </div>
+    </nav>
+
+    <div class="main">
+        <table class="slot-table table table-bordered">
+            <thead>
+                <tr>
+                    <th>Slot ID</th>
+                    <th>Slot Number</th>
+                    <th>Status</th>
+                    <th>Location</th>
+                    <th>Cost</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Slot-101</td>
+                    <td>Available</td>
+                    <td>Termp Site</td>
+                    <td>1000</td>
+                    <td>
+                        <button class="btn btn-success book" data-slot-id="1" data-price="1000">Book</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Slot-102</td>
+                    <td>Occupied</td>
+                    <td>Termp Site</td>
+                    <td>1200</td>
+                    <td>
+                        <button class="btn btn-success book" data-slot-id="2" data-price="1200">Book</button>
+                    </td>
+                </tr>
+                <!-- Additional slot rows as needed -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal form for booking -->
+    <div id="bookingModal" class="d-flex">
+        <div class="modal-content p-4">
+            <span class="close-btn text-danger" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <h5>Book Parking Slot</h5>
+            </div>
+            <form id="paymentForm" class="mt-3">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="slotId" class="form-label">Slot ID</label>
+                    <input type="text" class="form-control" id="slotId" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price (NGN)</label>
+                    <input type="text" class="form-control" id="price" readonly>
+                </div>
+                <button type="button" class="btn btn-primary w-100" onclick="initiatePayment()">Proceed to Payment</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script>
+        // Show modal on "Book" button click
+        document.querySelectorAll('.book').forEach(button => {
+            button.addEventListener('click', function() {
+                const slotId = this.getAttribute('data-slot-id');
+                const price = this.getAttribute('data-price');
+                
+                document.getElementById('slotId').value = slotId;
+                document.getElementById('price').value = price;
+                
+                document.getElementById('bookingModal').style.display = 'flex';
+            });
+        });
+
+        // Close modal function
+        function closeModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        // Initialize Paystack payment
+        function initiatePayment() {
+            const email = document.getElementById('email').value;
+            const price = document.getElementById('price').value * 100; // Convert to kobo for Paystack
+            const slotId = document.getElementById('slotId').value;
+
+            let handler = PaystackPop.setup({
+                key: 'YOUR_PAYSTACK_PUBLIC_KEY', // Replace with your Paystack public key
+                email: email,
+                amount: price,
+                currency: 'NGN',
+                callback: async function(response) {
+                    alert('Payment successful! Transaction reference: ' + response.reference);
+
+                    // Close the modal after successful payment
+                    closeModal();
+
+                    // Send payment details to the backend
+                    try {
+                        const res = await fetch('/cars/book', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                email: email,
+                                paymentReference: response.reference,
+                                slotId: slotId,
+                                amountPaid: price / 100 // Convert back to Naira
+                            })
+                        });
+
+                        const data = await res.json();
+                        if (data.success) {
+                            alert('Booking confirmed!');
+                        } else {
+                            alert('Error confirming booking: ' + data.message);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Failed to confirm booking. Please try again.');
+                    }
+                },
+                onClose: function() {
+                    alert('Transaction was not completed.');
+                }
+            });
+            handler.openIframe();
+        }
+    </script>
+</body>
+</html>

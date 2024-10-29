@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="../css/userDashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>Welcome, User</h2>
+      </div>
+      <nav class="sidebar-menu">
+        <a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="#">Reserve Parking</a>
+        <a href="#">Parking History</a>
+        <a href="#">Payments</a>
+        <a href="#">Profile</a>
+        <a href="#">Settings</a>
+        <a href="#">Logout</a>
+      </nav>
+    </aside>
+  
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <h1>User Dashboard</h1>
+        <p>Your one-stop management portal</p>
+      </header>
+
+      <section class="content">
+        <div class="stats-cards">
+          <div class="card">
+            <h3>Available Slots</h3>
+            <p>0</p>
+          </div>
+          <div class="card">
+            <h3>Reserved Slots</h3>
+            <p>0</p>
+          </div>
+          <div class="card">
+            <h3>Total Payment</h3>
+            <p>NGN0.00</p>
+          </div>
+        </div>
+        <div class="chart-section">
+          <h2>Parking History Overview</h2>
+          <canvas id="historyChart"></canvas>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

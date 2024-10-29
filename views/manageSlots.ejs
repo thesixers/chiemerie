@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Manage Slots</title>
+  <link rel="stylesheet" href="../css/manageSlot.css">
+</head>
+<body>
+  <% let {Slot, Tickets} = payload %>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="sidebar-header">
+            <h2>Admin Panel</h2>
+          </div>
+          <nav class="sidebar-menu">
+            <a href="/users/adminDashboard" >Dashboard</a>
+            <a href="/users/manageSlot" class="active" >Manage Slots</a>
+            <a href="/users/userManagement">Users</a>
+            <a href="#">Payments</a>
+            <a href="/cars/register">Create Admin</a>
+            <a href="#">Settings</a>
+            <a href="#">Logout</a>
+          </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+          <!-- Header -->
+          <header>
+            <h2>Manage Parking Slots</h2>
+            <!-- Button to open the slot registration form modal -->
+            <button id="openSlotFormBtn" class="open-form-btn">Add New Slot</button>
+          </header>
+      
+    
+          <!-- Slot List Table -->
+    <table class="slot-table">
+        <thead>
+          <tr>
+            <th>Slot ID</th>
+            <th>Slot Number</th>
+            <th>Status</th>
+            <th>Location</th>
+            <th>Cost</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% let index = 0; %>
+          <% Slot.forEach(e => { %>
+           <% index += 1 %>
+            <tr>
+              <td><%= index %></td>
+              <td><%= e.slotnumber %></td>
+              <td><%= e.status %></td>
+              <td><%= e.location %></td>
+              <td><%= e.price %></td>
+              <td>
+                <button class="edit-btn">Edit</button>
+                <button class="delete-btn">Delete</button>
+              </td>
+            </tr>
+         <% }); %>
+        </tbody>
+      </table>
+          
+
+       <!-- Add Slot Form Modal -->
+    <div id="slotFormModal" class="slot-form-modal">
+        <div class="modal-content">
+          <span id="closeSlotModal" class="close">&times;</span>
+          <h3>Add New Slot</h3>
+          <form id="slot-form" class="slot-form">
+            <label for="slotNumber">Slot Number</label>
+            <input type="text" id="slotNumber" name="slotNumber" required>
+  
+            <label for="level">Price</label>
+            <input type="number" id="price" name="price" required min="0">
+
+            <label for="location">Location</label>
+            <input type="text" id="location" name="location" required>
+  
+            <button type="submit" class="submit-btn">Add Slot</button>
+          </form>
+        </div>
+      </div>
+    
+         
+        </main>
+      </div>
+
+  <script src="../js/manageslot.js"></script>
+  <script>
+    // form submition
+let form = document.querySelector('form');
+
+form.addEventListener('submit', async function(e){
+  e.preventDefault()
+  let price = form.price.value;
+  let slotNumber = form.slotNumber.value;
+  let location = form.location.value;
+
+  try {
+    let res = await fetch('/cars/addslot', {
+      method: 'POST',
+      body: JSON.stringify({slotNumber, price, location}),
+      headers: {'Content-Type': 'application/json'}
+    });
+
+    let data = await res.json();
+
+    let {E,M} = data;
+    if(E){ alert(E)}; 
+    if(M){
+      console.log(M);
+      reload()
+    }
+    
+  } catch (err) { 
+    console.log(err.message);  
+  }
+})
+
+function reload(){
+  location.reload();
+}
+
+  </script>
+</body>
+</html>

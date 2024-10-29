@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="../css/adminDashboard.css">
+</head>
+<body>
+  <% let {Slot, Tickets} = payload %>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>Admin Panel</h2>
+      </div>
+      <nav class="sidebar-menu">
+        <a href="/cars/adminDashboard" class="active">Dashboard</a>
+        <a href="/cars/manageSlot">Manage Slots</a>
+        <a href="/cars/userManagement">Users</a>
+        <a href="#">Payments</a>
+        <a href="/cars/register">Create Admin</a>
+        <a href="#">Settings</a>
+        <a href="#">Logout</a>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <h1>Admin Dashboard</h1>
+        <p>Manage and monitor all parking system operations</p>
+      </header>
+
+      <!-- Overview Section -->
+      <section class="overview">
+        <!-- <div class="card">
+          <h3>Total Users</h3>
+          <p>0</p>
+        </div> -->
+        <div class="card">
+          <h3>Occupied Slots</h3>
+          <p>
+            <% 
+              let occupied = Slot.filter(e => e.status === 'occupied');
+            %>
+            <%= occupied.length %>
+          </p>
+        </div>
+        <div class="card">
+          <h3>Total Revenue</h3>
+          <p>NGN0</p>
+        </div>
+        <div class="card">
+          <h3>Available Slots</h3>
+          <p>
+            <% 
+              let available = Slot.filter(e => e.status === 'available');
+            %>
+            <%= available.length %>
+          </p>
+        </div>
+      </section>
+
+      <!-- Charts Section -->
+      <section class="charts">
+        <div class="chart-container">
+          <h2>Monthly Revenue</h2>
+          <canvas id="revenueChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h2>Parking Slot Usage</h2>
+          <canvas id="slotUsageChart"></canvas>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
