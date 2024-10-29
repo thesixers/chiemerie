@@ -82,6 +82,13 @@ router.post('/addslot', async (req,res) =>{
 
 router.post('/book', async (req,res) =>{
     console.log(req.body);
+    let {email, paymentReference, slotId, amountPaid} = req.body;
+
+    try {
+        let slot = await Slots.findById(slotId);
+    } catch (err) {
+        console.log(err);
+    }
 })
 
 
