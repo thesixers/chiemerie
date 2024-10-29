@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parking Space Booking</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>Document</title>
     <link rel="stylesheet" href="../public/css/manageSlot.css">
     <style>
         nav {
@@ -14,8 +13,8 @@
             position: fixed;
             color: white;
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             padding: 0 20px;
         }
         .slot-table {
@@ -27,34 +26,28 @@
         .main {
             width: 80%;
         }
-        /* Modal styling */
-        #bookingModal {
+        /* Modal Styles */
+        .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
         }
         .modal-content {
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            width: 400px;
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        .modal-header h5 {
-            margin: 0;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
         }
         .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 1.5rem;
+            float: right;
             cursor: pointer;
+            color: red;
         }
     </style>
 </head>
@@ -62,13 +55,13 @@
     <nav>
         <div class="logo">Parking Space</div>
         <div class="right">
-            <a href="" class="text-white text-decoration-none">Home</a>
-            <a href="" class="text-white text-decoration-none ms-3">Available Spaces</a>
+            <a href="#">Home</a>
+            <a href="#">Available Spaces</a>
         </div>
     </nav>
 
     <div class="main">
-        <table class="slot-table table table-bordered">
+        <table class="slot-table">
             <thead>
                 <tr>
                     <th>Slot ID</th>
@@ -84,20 +77,10 @@
                     <td>1</td>
                     <td>Slot-101</td>
                     <td>Available</td>
-                    <td>Termp Site</td>
-                    <td>1000</td>
+                    <td>term site</td>
+                    <td>100</td>
                     <td>
-                        <button class="btn btn-success book" data-slot-id="1" data-price="1000">Book</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Slot-102</td>
-                    <td>Occupied</td>
-                    <td>Termp Site</td>
-                    <td>1200</td>
-                    <td>
-                        <button class="btn btn-success book" data-slot-id="2" data-price="1200">Book</button>
+                        <button class="edit-btn book" data-slot-id="1" data-price="100">Book</button>
                     </td>
                 </tr>
                 <!-- Additional slot rows as needed -->
@@ -105,32 +88,26 @@
         </table>
     </div>
 
-    <!-- Modal form for booking -->
-    <div id="bookingModal" class="d-flex">
-        <div class="modal-content p-4">
-            <span class="close-btn text-danger" onclick="closeModal()">&times;</span>
-            <div class="modal-header">
-                <h5>Book Parking Slot</h5>
-            </div>
-            <form id="paymentForm" class="mt-3">
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
-                </div>
-                <div class="mb-3">
-                    <label for="slotId" class="form-label">Slot ID</label>
-                    <input type="text" class="form-control" id="slotId" readonly>
-                </div>
-                <div class="mb-3">
-                    <label for="price" class="form-label">Price (NGN)</label>
-                    <input type="text" class="form-control" id="price" readonly>
-                </div>
-                <button type="button" class="btn btn-primary w-100" onclick="initiatePayment()">Proceed to Payment</button>
+    <!-- Modal Structure -->
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">×</span>
+            <h3>Book Slot</h3>
+            <form id="bookingForm">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required><br><br>
+                
+                <label for="slotId">Slot ID:</label>
+                <input type="text" id="slotId" readonly><br><br>
+                
+                <label for="price">Slot Price:</label>
+                <input type="text" id="price" readonly><br><br>
+                
+                <button type="button" onclick="initiatePayment()">Submit</button>
             </form>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <script>
         // Show modal on "Book" button click
@@ -155,17 +132,14 @@
         function initiatePayment() {
             const email = document.getElementById('email').value;
             const price = document.getElementById('price').value * 100; // Convert to kobo for Paystack
-            const slotId = document.getElementById('slotId').value;
 
             let handler = PaystackPop.setup({
-                key: 'YOUR_PAYSTACK_PUBLIC_KEY', // Replace with your Paystack public key
+                key: 'pk_test_4cafecdbece6876b2bce9eb81e01a78427850e5f', // Replace with your Paystack public key
                 email: email,
                 amount: price,
                 currency: 'NGN',
                 callback: async function(response) {
                     alert('Payment successful! Transaction reference: ' + response.reference);
-
-                    // Close the modal after successful payment
                     closeModal();
 
                     // Send payment details to the backend
