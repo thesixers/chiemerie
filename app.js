@@ -4,6 +4,8 @@ const adminRoutes = require('./Routes/adminRoutes.js');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const Slots = require('./models/slots.js');
+const {loopTickets} = require('./middleware/mailSender.js');
 
 require('dotenv').config();
 
@@ -24,13 +26,21 @@ app.set('view engine', 'ejs');
 app.use(morgan('dev'));
 app.use(cookieParser());
 
+
+setInterval(() => {
+  loopTickets();
+}, 24 * 60 * 60 * 1000);
+
 // Landing Page Route
 app.get('/', (req, res) => {
   res.redirect('/bookspace');
 });
 
-app.get('/bookspace', (req,res) =>{
-  res.render('user');
+app.get('/bookspace', async (req,res) =>{
+  let slots = await Slots.find();
+  let aSlots = slots.filter(e => e.status === 'available');
+  console.log(aSlots);
+  res.render('user', {title: 'Booking page', slots: aSlots});
 })
 
 app.use('/cars', adminRoutes)

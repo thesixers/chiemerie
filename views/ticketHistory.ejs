@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - User Management</title>
     <style>
-                      /* Add this to dashboard.css */
-                    /* General dashboard container */
                     * {
                         margin: 0;
                         padding: 0;
@@ -192,6 +190,7 @@
     </style>
 </head>
 <body>
+  <% let {Slot, Tickets} = payload %>
   <div class="dashboard-container">
     <!-- Sidebar -->
     <aside class="sidebar">
@@ -199,13 +198,12 @@
         <h2>Admin Panel</h2>
       </div>
       <nav class="sidebar-menu">
-        <a href="/users/adminDashboard" >Dashboard</a>
-        <a href="/users/manageSlot">Manage Slots</a>
-        <a href="/users/userManagement" class="active" >Users</a>
-        <a href="#">Payments</a>
-        <a href="#">Reports</a>
+        <a href="/cars/adminDashboard" class="active">Dashboard</a>
+        <a href="/cars/manageSlot">Manage Slots</a>
+        <a href="/cars/tickets">Tickets</a>
+        <a href="/cars/register">Create Admin</a>
         <a href="#">Settings</a>
-        <a href="#">Logout</a>
+        <a href="/cars/logout">Logout</a>
       </nav>
     </aside>
     <!-- Main Content -->
@@ -213,9 +211,9 @@
       <!-- Header -->
       
       <header>
-        <h2>User Management</h2>
+        <h2>Ticket History</h2>
         <!-- Button to open the registration form modal -->
-        <button id="openFormBtn" class="open-form-btn">Register New User</button>
+        <!-- <button id="openFormBtn" class="open-form-btn">Register New User</button> -->
       </header>
   
       <!-- User List Table -->
@@ -223,65 +221,28 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>Full Name</th>
+            <th>Slot No</th>
             <th>Email</th>
-            <th>Role</th>
+            <th>Ticket No</th>
+            <th>Expires on</th>
             <th>Status</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>John Doe</td>
-            <td>john.doe@example.com</td>
-            <td>Admin</td>
-            <td>Active</td>
-            <td><button class="edit-btn">Edit</button> <button class="delete-btn">Delete</button></td>
+          <% let index = 0; %>
+          <% Tickets.forEach(e => { %>
+           <% index += 1 %>
+           <tr>
+            <td><%= index %></td>
+            <td><%= e.slotnumber %></td>
+            <td><%= e.payersEmail %></td>
+            <td><%= e.ticketcode %></td>
+            <td><%= e.endDate %></td>
+            <td><%= e.status %></td>
           </tr>
-          <tr>
-            <td>2</td>
-            <td>Jane Smith</td>
-            <td>jane.smith@example.com</td>
-            <td>User</td>
-            <td>Inactive</td>
-            <td><button class="edit-btn">Edit</button> <button class="delete-btn">Delete</button></td>
-          </tr>
-          <!-- Additional user rows as needed -->
+         <% }); %>
         </tbody>
       </table>
-  
-      <!-- User Registration Form Modal -->
-      <div id="userFormModal" class="user-form-modal">
-        <div class="modal-content">
-          <span id="closeModal" class="close">&times;</span>
-          <h3>Register New User</h3>
-          <form action="#" method="POST" class="user-form">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" required>
-  
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
-  
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
-  
-            <label for="role">Role</label>
-            <select id="role" name="role" required>
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-  
-            <label for="status">Status</label>
-            <select id="status" name="status" required>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-  
-            <button type="submit" class="submit-btn">Register User</button>
-          </form>
-        </div>
-      </div>
     </div>
     </main>
   </div>

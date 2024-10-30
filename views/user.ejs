@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title><%= title %></title>
     <link rel="stylesheet" href="../css/manageSlot.css">
     <style>
         nav {
@@ -49,15 +49,18 @@
             cursor: pointer;
             color: red;
         }
+        .no{
+            width: 100%;
+            color: grey;
+            text-align: center;
+            border: 1px solid black;
+        }
     </style>
 </head>
 <body>
     <nav>
         <div class="logo">Parking Space</div>
-        <div class="right">
-            <a href="#">Home</a>
-            <a href="#">Available Spaces</a>
-        </div>
+        <div class="right"></div>
     </nav>
 
     <div class="main">
@@ -73,17 +76,26 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Slot-101</td>
-                    <td>Available</td>
-                    <td>term site</td>
-                    <td>100</td>
-                    <td>
-                        <button class="edit-btn book" data-slot-id="1" data-price="100">Book</button>
-                    </td>
-                </tr>
-                <!-- Additional slot rows as needed -->
+                <% let index = 0; %>
+                <% if (slots.length > 0 || slots) { %>
+                    <% slots.forEach(e => { %>
+                        <% index += 1 %>
+                        <tr>
+                            <td><%= index %></td>
+                            <td><%= e.slotnumber %></td>
+                            <td><%= e.status %></td>
+                            <td><%= e.location %></td>
+                            <td><%= e.price %></td>
+                            <td>
+                                <button class="edit-btn book" data-slot-id="<%= e.id %>" data-price="<%= e.price %>">Book</button>
+                            </td>
+                        </tr>
+                   <% }); %>   
+                <% } else { %>
+                    
+                       <div class="no">No Available Parking Slots</div>
+                    
+                <% } %> 
             </tbody>
         </table>
     </div>
@@ -143,10 +155,11 @@
                 });
     
                 const data = await res.json();
-                if (data.success) {
-                    alert('Booking confirmed!');
+                let {E,M} = data;
+                if (M) {
+                    alert(M);
                 } else {
-                    alert('Error confirming booking: ' + data.message);
+                    alert(E);
                 }
             } catch (error) {
                 console.error('Error:', error);

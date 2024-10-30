@@ -3,8 +3,9 @@ const userAuth = require('../controllers/userController');
 const Slots = require('../models/slots');
 const Admin = require('../models/admin');
 const router = express.Router();
-const {generateRandomString, main, tokenChecker} = require('../middleware/mailSender');
+const {generateRandomString, main, tokenChecker, getDate30DaysFromNow} = require('../middleware/mailSender');
 const jwt = require('jsonwebtoken');
+const Ticket = require('../models/ticket');
 
 require('dotenv').config();
 
@@ -35,6 +36,15 @@ router.get('/adminDashboard', async (req,res) =>{
 router.get('/manageSlot', async (req,res) =>{
     res.render('manageSlots')
 });
+
+router.get('/tickets', (req,res) =>{
+    res.render('ticketHistory');
+})
+
+router.get('/logout', (req,res)=> {
+    res.cookie('carsAdmin', '', {maxAge: 1, httpOnly: true});
+    res.redirect('/cars/login');
+})
 
 router.post('/register', async (req,res) =>{
     let {email} = req.body;
@@ -83,11 +93,22 @@ router.post('/addslot', async (req,res) =>{
 router.post('/book', async (req,res) =>{
     console.log(req.body);
     let {email, paymentReference, slotId, amountPaid} = req.body;
+    let code = generateRandomString();
+    let endDate  = getDate30DaysFromNow().toDateString();
 
     try {
         let slot = await Slots.findById(slotId);
+        let createTicket = await Ticket.create({slotnumber: slot.slotnumber, amountPayed: amountPaid, ref: paymentReference, payersEmail: email, ticketcode: code, endDate});
+        console.log(createTicket);
+        if(createTicket){
+            slot.status = 'occupied';
+            await slot.save();
+            await main(email, `Your ticket Number is ${createTicket.ticketcode} for parking space ${slot.slotnumber} at ${slot.location} which expires on the ${createTicket.endDate}`);
+            res.json({M: 'Ticket Number has been sent to Your email'})
+        };
     } catch (err) {
         console.log(err);
+
     }
 })
 

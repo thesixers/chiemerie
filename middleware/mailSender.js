@@ -55,4 +55,47 @@ const tokenChecker = (req, res, next) =>{
   })
 }
 
-module.exports = {main, generateRandomString, tokenChecker};
+function getDate30DaysFromNow() {
+  const currentDate = new Date();
+  const futureDate = new Date(currentDate);
+  futureDate.setDate(currentDate.getDate() + 30);
+  return futureDate;
+}
+
+
+function scheduleDateCheck(targetDate) {
+
+  const currentDateString = new Date().toDateString();
+      
+      if (currentDateString === targetDate) {
+          console.log("The date matches the target date!");
+          return true;
+      } else {
+          console.log("No match yet. Checking again in 24 hours.");
+          return false;
+      }
+}
+
+
+async function loopTickets() {
+  let tickets = await Ticket.find();
+
+  for (const e of tickets) {
+    const isDateMatched = scheduleDateCheck(e.endDate);
+    
+    if (isDateMatched) {
+      e.status = 'inactive';
+      await e.save();
+
+      const slot = await Slots.findOne({slotnumber: e.slotnumber});
+      
+      if (slot) {
+        slot.status = 'available';
+        await slot.save();
+      }
+    }
+  }
+}
+
+
+module.exports = {main, generateRandomString, tokenChecker, getDate30DaysFromNow, loopTickets};
